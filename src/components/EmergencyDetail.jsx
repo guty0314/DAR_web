@@ -91,7 +91,7 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
       console.error('Error subiendo imagen:', e);
     } finally {
       setSendingImage(false);
-      // Limpiar el input para permitir subir la misma imagen de nuevo
+      // Limpiar el input para permitir subir la misma imFagen de nuevo
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -251,10 +251,10 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
                     )}
                     {m.image_url ? (
                       <img
-                        src={`${SERVER_URL}${m.image_url}`}
+                        src={m.image_url}
                         alt="imagen"
                         style={styles.chatImage}
-                        onClick={() => setLightboxUrl(`${SERVER_URL}${m.image_url}`)}
+                        onClick={() => setLightboxUrl(m.image_url)}
                       />
                     ) : (
                       <div style={styles.bubbleText}>{m.message}</div>

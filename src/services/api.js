@@ -5,6 +5,9 @@ const BASE_URL = 'https://dar-backend-test.onrender.com';
 
 const api = axios.create({
   baseURL: BASE_URL,
+  headers: {
+    'ngrok-skip-browser-warning': 'true',
+  },
 });
 
 // Interceptor para agregar token automáticamente

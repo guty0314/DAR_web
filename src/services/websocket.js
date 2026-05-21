@@ -2,6 +2,7 @@
 
 const BASE_WS_URL = 'wss://dar-backend-test.onrender.com';
 
+
 class WebSocketService {
   constructor() {
     this.ws = null;

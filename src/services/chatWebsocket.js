@@ -1,7 +1,6 @@
 // src/services/chatWebsocket.js
 
 const BASE_WS_URL = 'wss://dar-backend-test.onrender.com';
-
 export class ChatWebSocketService {
   constructor() {
     this.ws = null;
