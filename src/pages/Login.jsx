@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { login } from '../services/api';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -7,6 +8,12 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
+
+  const handleCaptcha = (value) => {
+    console.log("Captcha value:", value);
+    setCaptchaToken(value);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -14,10 +21,18 @@ export default function Login({ onLogin }) {
       setError('Completá usuario y contraseña.');
       return;
     }
+    if (!captchaToken) {
+      setError('Por favor, verificá que no eres un robot.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
-      const data = await login(username, password);
+      const data = await login(
+        username,
+        password,
+        captchaToken
+      );
       localStorage.setItem('token', data.access_token);
       onLogin(data.access_token);
     } catch (e) {
@@ -76,7 +91,10 @@ export default function Login({ onLogin }) {
               </button>
             </div>
           </div>
-
+          <ReCAPTCHA
+            sitekey="6Le3vfUsAAAAANka8ur29CNQscJkxz4fTlBO3mrU"
+            onChange={handleCaptcha}
+          />
           {error && (
             <div style={styles.error}>
               ❌ {error}

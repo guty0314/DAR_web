@@ -19,10 +19,11 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export const login = async (username, password) => {
+export const login = async (username, password, captchaToken) => {
   const formData = new URLSearchParams();
   formData.append('username', username);
   formData.append('password', password);
+  formData.append('captcha_token', captchaToken);
 
   const resp = await api.post('/token', formData, {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

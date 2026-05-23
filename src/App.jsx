@@ -6,9 +6,11 @@ export default function App() {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
-    // Recuperar token si ya estaba logueado
     const savedToken = localStorage.getItem('token');
-    if (savedToken) setToken(savedToken);
+
+    if (savedToken) {
+      setToken(savedToken);
+    }
   }, []);
 
   const handleLogin = (newToken) => {
