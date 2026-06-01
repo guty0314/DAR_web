@@ -69,29 +69,22 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
   const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const token = localStorage.getItem('token');
     if (!token) return;
-
     setSendingImage(true);
     try {
       const formData = new FormData();
       formData.append('token', token);
       formData.append('file', file);
-
       const resp = await fetch(
         `${SERVER_URL}/chat/${detail.id}/upload-image/`,
         { method: 'POST', body: formData }
       );
-
-      if (!resp.ok) {
-        alert('Error al subir la imagen');
-      }
+      if (!resp.ok) alert('Error al subir la imagen');
     } catch (e) {
       console.error('Error subiendo imagen:', e);
     } finally {
       setSendingImage(false);
-      // Limpiar el input para permitir subir la misma imFagen de nuevo
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -122,6 +115,7 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
         </div>
       )}
 
+      {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <div style={{ ...styles.colorDot, backgroundColor: color }} />
@@ -135,8 +129,10 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
         <button onClick={onClose} style={styles.closeBtn}>✕</button>
       </div>
 
+      {/* Body */}
       <div style={styles.body}>
 
+        {/* Status */}
         <div style={{
           ...styles.statusBanner,
           backgroundColor: detail.active ? 'rgba(229,57,53,0.15)' : 'rgba(255,255,255,0.05)',
@@ -147,6 +143,7 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
           </span>
         </div>
 
+        {/* Interviniente */}
         <div style={styles.section}>
           <div style={styles.sectionTitle}>👤 Interviniente</div>
           <div style={styles.infoCard}>
@@ -173,6 +170,7 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
           </div>
         </div>
 
+        {/* Ubicación */}
         <div style={styles.section}>
           <div style={styles.sectionTitle}>📍 Ubicación</div>
           <div style={styles.infoCard}>
@@ -191,6 +189,7 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
           </div>
         </div>
 
+        {/* Agentes */}
         <div style={styles.section}>
           <div style={styles.sectionTitle}>🛡️ Agentes que respondieron ({detail.responses?.length || 0})</div>
           {detail.responses?.length === 0 ? (
@@ -255,6 +254,7 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
                         alt="imagen"
                         style={styles.chatImage}
                         onClick={() => setLightboxUrl(m.image_url)}
+                        onError={(e) => { e.target.style.display = 'none'; }}
                       />
                     ) : (
                       <div style={styles.bubbleText}>{m.message}</div>
@@ -271,7 +271,6 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
 
           {detail.active && (
             <div style={styles.chatInputRow}>
-              {/* Input imagen oculto */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -279,7 +278,6 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
                 style={{ display: 'none' }}
                 onChange={handleImageUpload}
               />
-              {/* Botón imagen */}
               <button
                 style={{
                   ...styles.imageBtn,
@@ -292,7 +290,6 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
               >
                 {sendingImage ? '⏳' : '🖼'}
               </button>
-
               <textarea
                 style={{
                   ...styles.chatTextarea,
@@ -327,43 +324,172 @@ export default function EmergencyDetail({ detail, getColor, onClose }) {
 }
 
 const styles = {
-  container: { width: '300px', backgroundColor: '#0D1B2A', borderLeft: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', flexShrink: 0, overflow: 'hidden' },
-  lightbox: { position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, cursor: 'zoom-out' },
-  lightboxImg: { maxWidth: '90vw', maxHeight: '90vh', borderRadius: '8px', objectFit: 'contain' },
-  lightboxClose: { position: 'absolute', top: '20px', right: '24px', color: '#fff', fontSize: '24px', cursor: 'pointer' },
-  header: { padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  container: {
+    width: '380px',
+    backgroundColor: '#0D1B2A',
+    borderLeft: '1px solid rgba(255,255,255,0.08)',
+    display: 'flex',
+    flexDirection: 'column',
+    flexShrink: 0,
+    overflow: 'hidden',
+  },
+  lightbox: {
+    position: 'fixed', inset: 0,
+    backgroundColor: 'rgba(0,0,0,0.92)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    zIndex: 9999, cursor: 'zoom-out',
+  },
+  lightboxImg: {
+    maxWidth: '90vw', maxHeight: '90vh',
+    borderRadius: '8px', objectFit: 'contain',
+    boxShadow: '0 8px 40px rgba(0,0,0,0.8)',
+  },
+  lightboxClose: {
+    position: 'absolute', top: '20px', right: '24px',
+    color: '#fff', fontSize: '24px', cursor: 'pointer',
+  },
+  header: {
+    padding: '16px',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    flexShrink: 0,
+  },
   headerLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
   colorDot: { width: '12px', height: '12px', borderRadius: '50%', flexShrink: 0 },
   typeName: { fontSize: '15px', fontWeight: 'bold' },
   category: { color: 'rgba(255,255,255,0.4)', fontSize: '11px' },
-  closeBtn: { background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '16px', padding: '4px' },
-  body: { flex: 1, overflowY: 'auto', padding: '12px', display: 'flex', flexDirection: 'column', gap: '12px' },
-  statusBanner: { padding: '10px 14px', borderRadius: '10px', border: '1px solid', textAlign: 'center' },
+  closeBtn: {
+    background: 'none', border: 'none',
+    color: 'rgba(255,255,255,0.4)', cursor: 'pointer',
+    fontSize: '16px', padding: '4px',
+  },
+  body: {
+    flex: 1,
+    overflowY: 'auto',
+    padding: '12px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  statusBanner: {
+    padding: '10px 14px', borderRadius: '10px',
+    border: '1px solid', textAlign: 'center', flexShrink: 0,
+  },
   section: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  sectionTitle: { color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center' },
-  infoCard: { backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' },
+  sectionTitle: {
+    color: 'rgba(255,255,255,0.5)', fontSize: '11px',
+    fontWeight: 'bold', textTransform: 'uppercase',
+    letterSpacing: '1px', display: 'flex', alignItems: 'center',
+  },
+  infoCard: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)',
+    padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px',
+  },
   infoRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   infoLabel: { color: 'rgba(255,255,255,0.4)', fontSize: '12px' },
-  infoValue: { color: '#ffffff', fontSize: '12px', fontWeight: 'bold', textAlign: 'right', maxWidth: '160px', wordBreak: 'break-word' },
+  infoValue: {
+    color: '#ffffff', fontSize: '12px', fontWeight: 'bold',
+    textAlign: 'right', maxWidth: '160px', wordBreak: 'break-word',
+  },
   mapsLink: { color: '#2196F3', fontSize: '12px', textDecoration: 'none', marginTop: '4px' },
-  emptyResponses: { color: 'rgba(255,255,255,0.3)', fontSize: '12px', textAlign: 'center', padding: '16px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '10px' },
-  responseCard: { backgroundColor: 'rgba(255,255,255,0.04)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  emptyResponses: {
+    color: 'rgba(255,255,255,0.3)', fontSize: '12px', textAlign: 'center',
+    padding: '16px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '10px',
+  },
+  responseCard: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)',
+    padding: '10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+  },
   responseLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
-  responseAvatar: { width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#1E3A5F', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold', flexShrink: 0 },
+  responseAvatar: {
+    width: '32px', height: '32px', borderRadius: '50%',
+    backgroundColor: '#1E3A5F', color: '#ffffff',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: '14px', fontWeight: 'bold', flexShrink: 0,
+  },
   responseName: { color: '#ffffff', fontSize: '12px', fontWeight: 'bold' },
   responseLegajo: { color: 'rgba(255,255,255,0.4)', fontSize: '11px' },
   responseBadges: { display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' },
-  badgeAccepted: { backgroundColor: 'rgba(67,160,71,0.2)', border: '1px solid rgba(67,160,71,0.4)', color: '#43A047', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold' },
-  badgeArrived: { backgroundColor: 'rgba(33,150,243,0.2)', border: '1px solid rgba(33,150,243,0.4)', color: '#2196F3', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold' },
-  chatMessages: { backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', padding: '10px', minHeight: '160px', maxHeight: '220px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' },
-  chatEmpty: { color: 'rgba(255,255,255,0.25)', fontSize: '12px', textAlign: 'center', marginTop: '50px' },
-  bubble: { maxWidth: '85%', display: 'flex', flexDirection: 'column', gap: '2px', overflow: 'hidden' },
+  badgeAccepted: {
+    backgroundColor: 'rgba(67,160,71,0.2)', border: '1px solid rgba(67,160,71,0.4)',
+    color: '#43A047', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold',
+  },
+  badgeArrived: {
+    backgroundColor: 'rgba(33,150,243,0.2)', border: '1px solid rgba(33,150,243,0.4)',
+    color: '#2196F3', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold',
+  },
+  chatMessages: {
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,0.08)',
+    padding: '12px',
+    minHeight: '220px',
+    maxHeight: '450px',
+    overflowY: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  chatEmpty: {
+    color: 'rgba(255,255,255,0.25)', fontSize: '12px',
+    textAlign: 'center', marginTop: '40px',
+  },
+  bubble: {
+    maxWidth: '78%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    overflow: 'hidden',
+  },
   bubbleSender: { fontSize: '10px', color: 'rgba(255,255,255,0.45)', marginBottom: '2px' },
-  bubbleText: { color: '#ffffff', fontSize: '13px', lineHeight: '1.4', wordBreak: 'break-word' },
+  bubbleText: {
+    color: '#ffffff', fontSize: '13px', lineHeight: '1.4',
+    wordBreak: 'break-word', whiteSpace: 'pre-wrap',
+  },
   bubbleTime: { fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' },
-  chatImage: { width: '100%', maxWidth: '220px', borderRadius: '10px', display: 'block', cursor: 'zoom-in', objectFit: 'cover' },
+  chatImage: {
+    maxWidth: '220px',
+    maxHeight: '220px',
+    width: 'auto',
+    height: 'auto',
+    objectFit: 'contain',
+    borderRadius: '12px',
+    display: 'block',
+    cursor: 'zoom-in',
+  },
   chatInputRow: { display: 'flex', gap: '6px', alignItems: 'flex-end' },
-  imageBtn: { backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '16px', padding: '6px 10px', alignSelf: 'flex-end', transition: 'opacity 0.15s', flexShrink: 0 },
-  chatTextarea: { flex: 1, resize: 'none', backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#ffffff', fontFamily: 'system-ui, sans-serif', fontSize: '13px', padding: '8px 10px', outline: 'none' },
-  chatSendBtn: { backgroundColor: '#1D4ED8', border: 'none', borderRadius: '8px', color: '#ffffff', fontSize: '16px', padding: '8px 12px', alignSelf: 'flex-end', transition: 'opacity 0.15s' },
+  imageBtn: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: '10px',
+    fontSize: '16px',
+    padding: '8px 10px',
+    alignSelf: 'flex-end',
+    transition: 'opacity 0.15s',
+    flexShrink: 0,
+  },
+  chatTextarea: {
+    flex: 1,
+    resize: 'none',
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: '10px',
+    color: '#ffffff',
+    fontFamily: 'system-ui, sans-serif',
+    fontSize: '13px',
+    padding: '10px 12px',
+    outline: 'none',
+  },
+  chatSendBtn: {
+    backgroundColor: '#2563EB',
+    border: 'none',
+    borderRadius: '10px',
+    color: '#ffffff',
+    fontSize: '16px',
+    padding: '10px 14px',
+    alignSelf: 'flex-end',
+    transition: 'opacity 0.15s',
+  },
 };
